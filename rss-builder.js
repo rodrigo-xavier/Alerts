@@ -4,6 +4,16 @@ const parser = new Parser();
 const DAY_MS = 24 * 60 * 60 * 1000;
 const MAX_AGE_DAYS = 15;
 
+// Função para escapar caracteres especiais no XML
+function escapeXML(str = "") {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
 async function main() {
   const urls = fs.readFileSync("feeds.txt", "utf-8").split("\n").filter(Boolean);
   let allItems = [];
@@ -47,7 +57,7 @@ async function main() {
   ${recentItems.map(item => `
   <item>
     <title><![CDATA[${item.title || ""}]]></title>
-    <link>${item.link}</link>
+    <link>${escapeXML(item.link)}</link>
     <pubDate>${new Date(item.pubDate || item.isoDate).toUTCString()}</pubDate>
     <description><![CDATA[${item.contentSnippet || ""}]]></description>
   </item>`).join("")}
