@@ -46,7 +46,7 @@ async function main() {
   <description>Feed RSS unificado de vários Google Alerts</description>
   ${recentItems.map(item => `
   <item>
-    <title><![CDATA[${item.title}]]></title>
+    <title><![CDATA[${item.title || ""}]]></title>
     <link>${item.link}</link>
     <pubDate>${new Date(item.pubDate || item.isoDate).toUTCString()}</pubDate>
     <description><![CDATA[${item.contentSnippet || ""}]]></description>
