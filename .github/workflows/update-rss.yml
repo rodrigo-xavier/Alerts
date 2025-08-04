@@ -2,7 +2,7 @@ name: Atualizar RSS
 
 on:
   schedule:
-    - cron: "0 */3 * * *"  # A cada 3 horas
+    - cron: "0 */2 * * *"  # A cada 2 horas
   workflow_dispatch:
 
 # Dá ao TOKEN permissão para escrever no repositório

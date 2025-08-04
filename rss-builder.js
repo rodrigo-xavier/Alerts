@@ -2,7 +2,7 @@ const Parser = require("rss-parser");
 const fs = require("fs");
 const parser = new Parser();
 const DAY_MS = 24 * 60 * 60 * 1000;
-const MAX_AGE_DAYS = 7;
+const MAX_AGE_DAYS = 15;
 
 async function main() {
   const urls = fs.readFileSync("feeds.txt", "utf-8").split("\n").filter(Boolean);
@@ -27,7 +27,7 @@ async function main() {
     }
   }
 
-  // Filtrar por data (últimos 7 dias)
+  // Filtrar por data (últimos 15 dias)
   const now = Date.now();
   const recentItems = uniqueItems.filter(item => {
     const pubDate = new Date(item.pubDate || item.isoDate || 0).getTime();
@@ -42,7 +42,7 @@ async function main() {
 <rss version="2.0">
 <channel>
   <title>Feed Mesclado</title>
-  <link>https://SEU-USUARIO.github.io/</link>
+  <link>https://rodrigo-xavier.github.io/</link>
   <description>Feed RSS unificado de vários Google Alerts</description>
   ${recentItems.map(item => `
   <item>
