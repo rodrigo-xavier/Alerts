@@ -56,10 +56,10 @@ async function main() {
   <description>Feed RSS unificado de vários Google Alerts</description>
   ${recentItems.map(item => `
   <item>
-    <title><![CDATA[${item.title || ""}]]></title>
+    <title><![CDATA[${escapeXML(item.title) || ""}]]></title>
     <link>${escapeXML(item.link)}</link>
     <pubDate>${new Date(item.pubDate || item.isoDate).toUTCString()}</pubDate>
-    <description><![CDATA[${item.contentSnippet || ""}]]></description>
+    <description><![CDATA[${escapeXML(item.contentSnippet) || ""}]]></description>
   </item>`).join("")}
 </channel>
 </rss>`;
