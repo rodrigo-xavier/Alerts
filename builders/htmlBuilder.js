@@ -1,12 +1,11 @@
 const fs = require("fs");
 const path = require("path");
 
-const RSS_DIR = "RSS";
-const files = fs.readdirSync(RSS_DIR).filter(f => f.endsWith(".xml"));
+function generateIndexHTML(RSS_DIR, outputFile = "index.html") {
+  const files = fs.readdirSync(RSS_DIR).filter(f => f.endsWith(".xml"));
+  const links = files.map(file => `<li><a href="${RSS_DIR}/${file}" target="_blank">${file}</a></li>`).join("\n");
 
-const links = files.map(file => `<li><a href="${RSS_DIR}/${file}" target="_blank">${file}</a></li>`).join("\n");
-
-const html = `<!DOCTYPE html>
+  const html = `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -50,5 +49,8 @@ const html = `<!DOCTYPE html>
 </body>
 </html>`;
 
-fs.writeFileSync("index.html", html);
-console.log("Arquivo index.html gerado com sucesso.");
+  fs.writeFileSync(outputFile, html);
+  console.log(`${outputFile} gerado com sucesso.`);
+}
+
+module.exports = generateIndexHTML;
