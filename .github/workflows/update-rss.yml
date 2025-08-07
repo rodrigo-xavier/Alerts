@@ -2,7 +2,7 @@ name: Atualizar RSS
 
 on:
   schedule:
-    - cron: "0 */2 * * *"  # A cada 2 horas
+    - cron: "0 */6 * * *"  # A cada 6 horas
   workflow_dispatch:
 
 # Dá ao TOKEN permissão para escrever no repositório
@@ -28,7 +28,7 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add ./RSS ./backup
+          git add ./RSS
           git commit -m "Atualiza feed RSS" || echo "Nada para commitar"
           git remote set-url origin https://x-access-token:${TOKEN}@github.com/${{ github.repository }}
           git push origin HEAD:main
