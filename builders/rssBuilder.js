@@ -33,6 +33,7 @@ async function processFeedFile(filename) {
   }
 
   let allItems = [];
+  const rssParser = new Parser();
 
   // 1. Carregar novos itens das URLs
   for (const url of urls) {
