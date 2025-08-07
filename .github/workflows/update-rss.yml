@@ -20,7 +20,7 @@ jobs:
         run: npm install
 
       - name: Rodar script
-        run: node rss-builder.js
+        run: node builders/rssBuilder.js
 
       - name: Commit & Push
         env:
@@ -28,7 +28,7 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add index.xml feeds.json
+          git add ./RSS ./backup
           git commit -m "Atualiza feed RSS" || echo "Nada para commitar"
           git remote set-url origin https://x-access-token:${TOKEN}@github.com/${{ github.repository }}
           git push origin HEAD:main

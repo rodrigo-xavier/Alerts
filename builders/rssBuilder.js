@@ -1,10 +1,15 @@
+const generateIndexHTML = require("./generateIndexHTML");
 const Parser = require("rss-parser");
 const fs = require("fs");
+const path = require("path");
 const parser = new Parser();
+
+const FEEDS_DIR = "feeds";
+const BACKUP_DIR = "backup";
+const RSS_DIR = "RSS";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const MAX_AGE_DAYS = 15;
 
-// Função para escapar caracteres especiais no XML
 function escapeXML(str = "") {
   return str
     .replace(/&/g, '&amp;')
@@ -14,8 +19,15 @@ function escapeXML(str = "") {
     .replace(/'/g, '&apos;');
 }
 
-async function main() {
-  const urls = fs.readFileSync("feeds.txt", "utf-8").split("\n").filter(Boolean);
+async function processFeedFile(filename) {
+  const feedName = path.basename(filename, ".txt");
+  const filePath = path.join(FEEDS_DIR, filename);
+
+  const urls = fs.readFileSync(filePath, "utf-8")
+    .split("\n")
+    .map(url => url.trim())
+    .filter(Boolean);
+
   let allItems = [];
 
   for (const url of urls) {
@@ -23,35 +35,36 @@ async function main() {
       const feed = await parser.parseURL(url);
       allItems.push(...feed.items);
     } catch (err) {
-      console.error("Erro ao carregar:", url, err.message);
+      console.error(`Erro ao carregar: ${url}`, err.message);
     }
   }
 
-  // Remover duplicatas por link
-  const uniqueItems = [];
+  // Remover duplicatas
   const seenLinks = new Set();
-  for (const item of allItems) {
+  const uniqueItems = allItems.filter(item => {
     if (!seenLinks.has(item.link)) {
       seenLinks.add(item.link);
-      uniqueItems.push(item);
+      return true;
     }
-  }
+    return false;
+  });
 
-  // Filtrar por data (últimos 15 dias)
+  // Filtrar últimos 15 dias
   const now = Date.now();
   const recentItems = uniqueItems.filter(item => {
     const pubDate = new Date(item.pubDate || item.isoDate || 0).getTime();
     return now - pubDate < MAX_AGE_DAYS * DAY_MS;
   });
 
-  // Salvar como JSON (histórico)
-  fs.writeFileSync("feeds.json", JSON.stringify(recentItems, null, 2));
+  // Salvar JSON
+  const jsonPath = path.join(BACKUP_DIR, `${feedName}.json`);
+  fs.writeFileSync(jsonPath, JSON.stringify(recentItems, null, 2));
 
-  // Gerar RSS XML
+  // Gerar XML
   const rss = `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
 <channel>
-  <title>Feed Mesclado</title>
+  <title>Feed Mesclado - ${feedName}</title>
   <link>https://rodrigo-xavier.github.io/</link>
   <description>Feed RSS unificado de vários Google Alerts</description>
   ${recentItems.map(item => `
@@ -64,7 +77,20 @@ async function main() {
 </channel>
 </rss>`;
 
-  fs.writeFileSync("index.xml", rss);
+  const xmlPath = path.join(RSS_DIR, `${feedName}.xml`);
+  fs.writeFileSync(xmlPath, rss);
+
+  console.log(`Processado: ${filename}`);
+}
+
+async function main() {
+  const feedFiles = fs.readdirSync(FEEDS_DIR).filter(file => file.endsWith(".txt"));
+
+  for (const file of feedFiles) {
+    await processFeedFile(file);
+  }
+
+  generateIndexHTML(RSS_DIR, "index.html");
 }
 
 main();
