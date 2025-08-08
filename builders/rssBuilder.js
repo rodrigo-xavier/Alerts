@@ -7,7 +7,7 @@ const { XMLParser } = require("fast-xml-parser");
 const FEEDS_DIR = "feeds";
 const RSS_DIR = "RSS";
 const DAY_MS = 24 * 60 * 60 * 1000;
-const MAX_AGE_DAYS = 15;
+const MAX_AGE_DAYS = 7;
 
 function escapeXML(str = "") {
   return str
