@@ -7,7 +7,7 @@ const { XMLParser } = require("fast-xml-parser");
 const FEEDS_DIR = "feeds";
 const RSS_DIR = "RSS";
 const DAY_MS = 24 * 60 * 60 * 1000;
-const MAX_AGE_DAYS = 7;
+const MAX_AGE_DAYS = 5;
 
 function escapeXML(str = "") {
   return str
@@ -72,7 +72,7 @@ async function processFeedFile(filename) {
     return false;
   });
 
-  // 4. Filtrar apenas os últimos 15 dias
+  // 4. Filtrar apenas os últimos 5 dias
   const now = Date.now();
   const recentItems = uniqueItems.filter(item => {
     const date = new Date(item.pubDate || item.isoDate);
